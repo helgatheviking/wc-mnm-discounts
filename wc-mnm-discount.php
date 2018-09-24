@@ -239,7 +239,8 @@ class WC_MNM_Discount {
 
 		if ( wc_mnm_is_mnm_cart_item( $cart_item ) ) {
 
-			$discount = $bundle->get_meta( '_mnm_per_product_discount', true );
+			$discount = self::get_discount( $bundle );
+			
 			$price = $cart_item[ 'data' ]->get_price();
 
 			if ( $price && ! empty( $discount ) ) {
@@ -266,7 +267,8 @@ class WC_MNM_Discount {
 	 * @param  object  $product
 	 */
 	public static function add_discount_price_of_items_filter( $bundled_product, $container_product ) {
-		$discount = $container_product->get_meta( '_mnm_per_product_discount' );
+
+		$discount = self::get_discount( $container_product );
 		$bundled_product->add_meta_data( '_mnm_discount', $discount, true );
 
 		add_filter( 'woocommerce_product_get_price', array( __CLASS__, 'discount_price_of_items' ), 10, 2 );
@@ -309,7 +311,7 @@ class WC_MNM_Discount {
 	 */
 	public static function bundle_get_discounted_price_html( $price, $product ) {
 
-		$discount = $product->get_meta( '_mnm_per_product_discount', true );
+		$discount = self::get_discount( $product );
 
 		if ( $price && ! empty( $discount ) ) {
 			
@@ -324,6 +326,22 @@ class WC_MNM_Discount {
 
 		}
 		return $price;
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| Helpers.
+	|--------------------------------------------------------------------------
+	*/
+
+	/**
+	 * Returns the discount.
+	 *
+	 * @param  object  $product
+	 * @return 
+	 */
+	public static function get_discount( $product ) {
+		return apply_filters( 'wc_mnm_discount_amount', $product->get_meta( '_mnm_per_product_discount', true ), $product );
 	}
 
 }
