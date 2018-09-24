@@ -274,6 +274,7 @@ class WC_MNM_Discount {
 		$child_product->add_meta_data( '_mnm_discount', $discount, true );
 
 		add_filter( 'woocommerce_product_get_price', array( __CLASS__, 'discount_price_of_items' ), 10, 2 );
+		add_filter( 'woocommerce_product_get_sale_price', array( __CLASS__, 'discount_price_of_items' ), 10, 2 );
 	}
 
 	/**
@@ -284,6 +285,7 @@ class WC_MNM_Discount {
 	 */
 	public static function remove_discount_price_of_items_filter( $child_product, $container_product ) {	
 		remove_filter( 'woocommerce_product_get_price', array( __CLASS__, 'discount_price_of_items' ), 10, 2 );
+		remove_filter( 'woocommerce_product_get_sale_price', array( __CLASS__, 'discount_price_of_items' ), 10, 2 );
 	}
 
 
@@ -296,7 +298,11 @@ class WC_MNM_Discount {
 	 */
 	public static function discount_price_of_items( $price, $product ) { 
 		$discount = $product->get_meta( '_mnm_discount' );
-
+		
+		if( $price == '' ) {
+			$price = $product->get_regular_price( 'edit' );
+		}
+		
 		if ( $price && ! empty( $discount ) ) {
 			$price = self::calculate_discount( $price, $discount );
 		}
