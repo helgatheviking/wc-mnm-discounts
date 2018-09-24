@@ -232,14 +232,14 @@ class WC_MNM_Discount {
 	 * Applies discount on bundled cart items based on overall cart quantity.
 	 *
 	 * @param  array  $cart_item
-	 * @param  obj    $bundle
+	 * @param  obj    WC_Product_Mix_and_Match $container_product
 	 * @return array  $cart_item
 	 */
-	public static function mnm_cart_item_discount( $cart_item, $bundle ) {
+	public static function mnm_cart_item_discount( $cart_item, $container_product ) {
 
 		if ( wc_mnm_is_mnm_cart_item( $cart_item ) ) {
 
-			$discount = self::get_discount( $bundle );
+			$discount = self::get_discount( $container_product );
 			
 			$price = $cart_item[ 'data' ]->get_price();
 
@@ -264,12 +264,14 @@ class WC_MNM_Discount {
 	/**
 	 * Add filter.
 	 *
-	 * @param  object  $product
+	 * @param  object WC_Product $child_product
+	 * @param  object WC_Product_Mix_and_Match $container_product
 	 */
-	public static function add_discount_price_of_items_filter( $bundled_product, $container_product ) {
+	public static function add_discount_price_of_items_filter( $child_product, $container_product ) {
 
 		$discount = self::get_discount( $container_product );
-		$bundled_product->add_meta_data( '_mnm_discount', $discount, true );
+		
+		$child_product->add_meta_data( '_mnm_discount', $discount, true );
 
 		add_filter( 'woocommerce_product_get_price', array( __CLASS__, 'discount_price_of_items' ), 10, 2 );
 	}
@@ -277,9 +279,10 @@ class WC_MNM_Discount {
 	/**
 	 * Clear filter.
 	 *
-	 * @param  object  $product
+	 * @param  object WC_Product $child_product
+	 * @param  object WC_Product_Mix_and_Match $container_product
 	 */
-	public static function remove_discount_price_of_items_filter( $product ) {	
+	public static function remove_discount_price_of_items_filter( $child_product, $container_product ) {	
 		remove_filter( 'woocommerce_product_get_price', array( __CLASS__, 'discount_price_of_items' ), 10, 2 );
 	}
 
