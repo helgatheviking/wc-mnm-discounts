@@ -212,10 +212,8 @@ class WC_MNM_Discount {
 	 */
 	public static function save_meta( $product ) {
 
-		$input_data           = $_POST[ '_mnm_per_product_discount' ];
-		$clean_data = wc_clean( wp_unslash( $_POST[ '_mnm_per_product_discount' ] ) );
-
 		if ( ! empty( $_POST[ '_mnm_per_product_discount' ] ) ) {
+			$clean_data = wc_clean( wp_unslash( $_POST[ '_mnm_per_product_discount' ] ) );
 			$product->add_meta_data( '_mnm_per_product_discount', $clean_data, true );
 		} else {
 			$product->delete_meta_data( '_mnm_per_product_discount' );
